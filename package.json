@@ -1,6 +1,7 @@
 {
   "name": "react-native-ios-files-app-save",
   "version": "0.1.0",
+  "type": "module",
   "description": "test",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -42,7 +43,7 @@
     "android"
   ],
   "repository": "https://github.com/girish54321/react-native-ios-files-app-save",
-  "author": "Girish Parate <girishparate41@gmail.com> (https://github.com/girish54321)",
+  "author": "Girish Parate <parategirish50@gmail.com> (https://github.com/girish54321)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/girish54321/react-native-ios-files-app-save/issues"
