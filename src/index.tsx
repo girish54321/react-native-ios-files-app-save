@@ -31,3 +31,15 @@ export const startDownload = async (url: string) => {
   } catch (e) {
   }
 }
+
+export const stateDownloadAppSave = (url: string) => {
+  return new Promise((resolve, reject) => {
+    try {
+      NativeModules.IosFilesAppSave.startDownload(url).then((res: any) => {
+        resolve(res)
+      });
+    } catch (e) {
+      reject(e)
+    }
+  });
+}
