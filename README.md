@@ -19,20 +19,19 @@ yarn add react-native-ios-files-app-save
 ### Android AndroidManifest.xml
 
 ```sh
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 ```
 
 ### iOS info.plist
 
 ```sh
-  <key>LSSupportsOpeningDocumentsInPlace</key>
-    <true/>
-  <key>UIFileSharingEnabled</key>
-    <true/>
+<key>LSSupportsOpeningDocumentsInPlace</key>
+  <true/>
+<key>UIFileSharingEnabled</key>
+  <true/>
 ```
 
 ## Usage
