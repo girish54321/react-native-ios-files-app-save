@@ -7,27 +7,27 @@ const fileArray = [
   {
     title: "PDF",
     image: require('./images/pdf.png'),
-    url: "http://www.africau.edu/images/default/sample.pdf"
+    url: "https://sample-videos.com/pdf/Sample-pdf-5mb.pdf"
   },
   {
     title: "PNG",
     image: require('./images/png.png'),
-    url: "https://file-examples-com.github.io/uploads/2017/10/file_example_PNG_1MB.png"
+    url: "https://sample-videos.com/img/Sample-png-image-1mb.png"
   },
   {
     title: "ZIP",
     image: require('./images/zip.png'),
-    url: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-large-zip-file.zip"
+    url: "https://sample-videos.com/zip/10mb.zip"
   },
   {
     title: "JPG",
     image: require('./images/jpg.png'),
-    url: "https://file-examples-com.github.io/uploads/2017/10/file_example_JPG_1MB.jpg"
+    url: "https://sample-videos.com/img/Sample-jpg-image-1mb.jpg"
   },
   {
     title: "DOC",
     image: require('./images/doc.png'),
-    url: "https://file-examples-com.github.io/uploads/2017/02/file-sample_1MB.doc"
+    url: "https://sample-videos.com/doc/Sample-doc-file-1000kb.doc"
   }
 ]
 export default function App() {
@@ -51,7 +51,7 @@ export default function App() {
     stateDownloadAppSave(url).then((res: any) => {
       console.log(res);
     }).catch((e) => {
-      console.log("error", e);
+      console.log("error ------- 1", e);
     })
   }
 

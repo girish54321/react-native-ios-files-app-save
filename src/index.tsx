@@ -37,9 +37,12 @@ export const stateDownloadAppSave = (url: string) => {
     try {
       NativeModules.IosFilesAppSave.startDownload(url).then((res: any) => {
         resolve(res)
+      }).catch((e: any) => {
+        console.log("this in index");
+        console.log("e2", e);
+        reject(e)
       });
     } catch (e) {
-      reject(e)
     }
   });
 }

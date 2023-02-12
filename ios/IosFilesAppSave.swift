@@ -1,26 +1,44 @@
 @objc(IosFilesAppSave)
 class IosFilesAppSave: NSObject {
 
-  @objc
-  func startDownload(_ string: String,  resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    let fileURL : String = string;
-   
-    guard let url = URL(string: fileURL) else {
-      reject("Error","Invalid URL",nil)
-      return
+@objc
+func startDownload(_ urlString: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    guard let url = URL(string: urlString) else {
+        reject("Error", "Invalid URL", nil)
+        return
     }
-      let fileName = url.lastPathComponent
-      let pdfData = try? Data.init(contentsOf: url)
-      let resDocPath = (FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!) as URL
-      let pdfFileName = fileName
-      let filePath = resDocPath.appendingPathComponent(pdfFileName ?? "file")
-      do {
-        try pdfData?.write(to: filePath,options: .atomic)
-        resolve("File Saved")
-      } catch {
-        reject("Error","Invalid URL",nil)
-      }
-  }
+
+    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        if let error = error {
+            reject("Error", "Error downloading file: \(error)", nil)
+            return
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            reject("Error", "Invalid status code", nil)
+            return
+        }
+
+        guard let data = data else {
+            reject("Error", "No data downloaded", nil)
+            return
+        }
+
+        let fileName = url.lastPathComponent
+        let resDocPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
+        let filePath = resDocPath.appendingPathComponent(fileName)
+
+        do {
+            try data.write(to: filePath)
+            resolve("File saved")
+        } catch {
+            reject("Error", "Error creating file: \(error)", nil)
+        }
+    }
+
+    task.resume()
+}
+
 
   @objc(multiply:withB:withResolver:withRejecter:)
   func multiply(a: Float, b: Float, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
