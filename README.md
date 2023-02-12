@@ -1,6 +1,8 @@
 # react-native-ios-files-app-save
 
-file dowload
+Downloading file in React Native (android & iOS)
+
+![App Screenshot](https://raw.githubusercontent.com/girish54321/DownloadApp/master/appimage.png)
 
 ## Installation
 
