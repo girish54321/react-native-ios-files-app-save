@@ -1,10 +1,12 @@
 # react-native-ios-files-app-save
 
-Downloading file in React Native (android & iOS)
+react-native-ios-files-app-save is a React Native package that allows you to easily download any file from the internet and save it to your Files app on Android and iOS devices.
 
 ![App Screenshot](https://raw.githubusercontent.com/girish54321/DownloadApp/master/appimage.png)
 
 ## Installation
+
+To install react-native-ios-files-app-save, use npm or yarn
 
 ### npm
 
@@ -38,6 +40,8 @@ yarn add react-native-ios-files-app-save
 
 ## Usage
 
+To use react-native-ios-files-app-save simply import the `stateDownloadAppSave` function and call it with the URL of the file you want to download:
+
 ```js
 import { stateDownloadAppSave } from 'react-native-ios-files-app-save';
 
@@ -47,7 +51,7 @@ export default function App() {
       //* Handle Permission
       return;
     }
-    stateDownloadAppSave('https://YOUFDF.COM/FILE/BILL/OCT.pdf')
+    stateDownloadAppSave('https://YOUR_FDF.COM/FILE/BILL/OCT.pdf')
       .then((res: any) => {
         console.log(res);
       })
@@ -65,6 +69,8 @@ export default function App() {
 ```
 
 ## Contributing
+
+Contributions are welcome! If you have any issues, ideas, or suggestions for react-native-ios-files-app-save, feel free to open an issue or submit a pull request on Github.
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
 
