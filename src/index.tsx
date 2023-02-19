@@ -17,6 +17,21 @@ const IosFilesAppSave = NativeModules.IosFilesAppSave
     }
   );
 
+export const enum DestinationPathEnum {
+  DIRECTORY_DOCUMENTS = "Documents",
+  DIRECTORY_DOWNLOADS = "Download",
+  DIRECTORY_MOVIES = "Movies",
+  DIRECTORY_MUSIC = "Music",
+  DIRECTORY_NOTIFICATIONS = "Notifications",
+  DIRECTORY_PICTURES = "Pictures",
+  DIRECTORY_PODCASTS = "Podcasts"
+}
+
+export interface FileSaveSuccess {
+  message: string;
+  path: string;
+  success: boolean;
+}
 
 
 export function multiply(a: number, b: number): Promise<number> {
@@ -32,15 +47,16 @@ export const startDownload = async (url: string) => {
   }
 }
 
-export const stateDownloadAppSave = (url: string) => {
+//TODO: Add Path Support
+
+export const stateDownloadAppSave = (url: string, path: DestinationPathEnum = DestinationPathEnum.DIRECTORY_DOWNLOADS) => {
   return new Promise((resolve, reject) => {
     try {
-      NativeModules.IosFilesAppSave.startDownload(url).then((res: any) => {
+      NativeModules.IosFilesAppSave.startDownload(url).then((res: FileSaveSuccess) => {
         resolve(res)
-      }).catch((e: any) => {
-        console.log("this in index");
-        console.log("e2", e);
-        reject(e)
+      }).catch((error: any) => {
+        const object = error?.userInfo;
+        reject(Platform.OS == "ios" ? object : error)
       });
     } catch (e) {
     }

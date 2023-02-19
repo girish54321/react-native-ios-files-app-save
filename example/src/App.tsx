@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { stateDownloadAppSave } from 'react-native-ios-files-app-save';
+import { FileSaveSuccess, stateDownloadAppSave } from 'react-native-ios-files-app-save';
 
 const fileArray = [
   {
@@ -48,12 +48,16 @@ export default function App() {
   };
 
   const demoDownload = (url: string) => {
-    stateDownloadAppSave(url).then((res: any) => {
-      console.log(res);
-    }).catch((e) => {
-      console.log("error ------- 1", e);
+    stateDownloadAppSave(url).then((res) => {
+      const fileSaveSuccess = res as FileSaveSuccess;
+      console.log(fileSaveSuccess);
+      console.log(fileSaveSuccess.message);
+    }).catch((error) => {
+      console.log("error", error);
     })
   }
+
+
 
   return (
     <SafeAreaView style={styles.container}>

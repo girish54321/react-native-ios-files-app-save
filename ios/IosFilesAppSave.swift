@@ -3,24 +3,37 @@ class IosFilesAppSave: NSObject {
 
 @objc
 func startDownload(_ urlString: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    var parameters: [String: Any] = ["message" : ""]
     guard let url = URL(string: urlString) else {
-        reject("Error", "Invalid URL", nil)
+        parameters["success"] = false
+        parameters["message"] = "Invalid URL"
+        let error = NSError(domain: "", code: 0, userInfo: parameters)
+        reject("error_code", "Error message", error)
         return
     }
 
     let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
         if let error = error {
-            reject("Error", "Error downloading file: \(error)", nil)
+            parameters["success"] = false
+            parameters["message"] = "Error downloading file: \(error)"
+            let errorObj = NSError(domain: "", code: 0, userInfo: parameters)
+            reject("error_code", "Error message", errorObj)
             return
         }
 
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            reject("Error", "Invalid status code", nil)
+            parameters["success"] = false
+            parameters["message"] = "Invalid status code"
+            let errorObj = NSError(domain: "", code: 0, userInfo: parameters)
+            reject("error_code", "Error message", errorObj)
             return
         }
 
         guard let data = data else {
-            reject("Error", "No data downloaded", nil)
+            parameters["success"] = false
+            parameters["message"] = "No data downloaded"
+            let errorObj = NSError(domain: "", code: 0, userInfo: parameters)
+            reject("error_code", "Error message", errorObj)
             return
         }
 
@@ -30,9 +43,14 @@ func startDownload(_ urlString: String, resolve: @escaping RCTPromiseResolveBloc
 
         do {
             try data.write(to: filePath)
-            resolve("File saved")
+            parameters["success"] = true
+            parameters["message"] = "File Saved"
+            resolve(parameters)
         } catch {
-            reject("Error", "Error creating file: \(error)", nil)
+            parameters["success"] = false
+            parameters["message"] = "Error creating file: \(error)"
+            let errorObj = NSError(domain: "", code: 0, userInfo: parameters)
+            reject("error_code", "Error message", errorObj)
         }
     }
 
