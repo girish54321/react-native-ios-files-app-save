@@ -4,7 +4,9 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -42,20 +44,17 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startDownload(String promise, Promise callback) {
-    downloadFile(promise, callback);
+  public void startDownload(String promise, String customFileName, Promise callback) {
+    downloadFile(promise, customFileName, callback);
   }
 
   private void downloadFile(String fileUrl, String customFileName, Promise callback) {
     WritableMap map = Arguments.createMap();
-    String appName = getApplicationName();
-
-    String fileName = "myFile.pdf"
+    String fileName = "myFile.pdf";
 
     //* Check if customFileName is not null
-
     if(customFileName != null) {
-      fileName = customFileName
+      fileName = customFileName;
     } else {
       fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
     }
@@ -107,10 +106,17 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
   }
 
 
-  private String getApplicationName() {
-    ApplicationInfo applicationInfo = mContext.getApplicationInfo();
-    int stringId = applicationInfo.labelRes;
-    return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : mContext.getString(stringId);
+  public class MyTask extends AsyncTask<String, Void, Integer> {
+    @Override
+    protected Integer doInBackground(String... params) {
+      Log.d("MyTask2222", "Result: " + params);
+      return 42;
+    }
+
+    @Override
+    protected void onPostExecute(Integer result) {
+      Log.d("MyTask", "Result: " + result);
+    }
   }
 
 

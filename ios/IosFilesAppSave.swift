@@ -2,9 +2,9 @@
 class IosFilesAppSave: NSObject {
 
 @objc
-func startDownload(_ urlString: String, customFileName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+func startDownload(_ urlString: String, customFileName: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     var parameters: [String: Any] = ["message" : ""]
-    let fileName = ""
+    var fileName: String? = nil
     guard let url = URL(string: urlString) else {
         parameters["success"] = false
         parameters["message"] = "Invalid URL"
@@ -38,13 +38,13 @@ func startDownload(_ urlString: String, customFileName: String, resolve: @escapi
             return
         }
 
-        if (customFileName != nill) {
+        if (customFileName != nil) {
             fileName = customFileName
         } else {
             fileName = url.lastPathComponent
         }
         let resDocPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
-        let filePath = resDocPath.appendingPathComponent(fileName)
+        let filePath = resDocPath.appendingPathComponent(fileName ?? "")
 
         do {
             try data.write(to: filePath)

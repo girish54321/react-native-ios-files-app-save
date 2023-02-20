@@ -11,6 +11,7 @@ RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
   return NO;
 }
 
-RCT_EXTERN_METHOD(startDownload:(NSString *)stringValue (NSString *)customFileName resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(startDownload:(NSString *)stringValue customFileName:(NSString *)customFileName resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+
 
 @end

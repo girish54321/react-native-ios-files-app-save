@@ -49,10 +49,10 @@ export const startDownload = async (url: string) => {
 
 //TODO: Add Path Support
 
-export const stateDownloadAppSave = (url: string, fileName: string? ,path: DestinationPathEnum = DestinationPathEnum.DIRECTORY_DOWNLOADS) => {
+export const stateDownloadAppSave = (url: string, fileName: string | null = null, path: DestinationPathEnum = DestinationPathEnum.DIRECTORY_DOWNLOADS) => {
   return new Promise((resolve, reject) => {
     try {
-      NativeModules.IosFilesAppSave.startDownload(url,fileName).then((res: FileSaveSuccess) => {
+      NativeModules.IosFilesAppSave.startDownload(url, fileName).then((res: FileSaveSuccess) => {
         resolve(res)
       }).catch((error: any) => {
         const object = error?.userInfo;
