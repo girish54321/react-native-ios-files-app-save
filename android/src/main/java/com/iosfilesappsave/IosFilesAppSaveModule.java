@@ -46,14 +46,19 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
     downloadFile(promise, callback);
   }
 
-  private void downloadFile(String fileUrl, Promise callback) {
+  private void downloadFile(String fileUrl, String customFileName, Promise callback) {
     WritableMap map = Arguments.createMap();
     String appName = getApplicationName();
-//    File directory = new File(Environment.getExternalStorageDirectory(), appName);
-//    if (!directory.exists()) {
-//      directory.mkdir();
-//    }
-    String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+
+    String fileName = "myFile.pdf"
+
+    //* Check if customFileName is not null
+
+    if(customFileName != null) {
+      fileName = customFileName
+    } else {
+      fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+    }
 
     // Create a new HttpURLConnection object
     HttpURLConnection urlConnection = null;
