@@ -48,7 +48,7 @@ export default function App() {
   };
 
   const demoDownload = (url: string) => {
-    stateDownloadAppSave(url).then((res) => {
+    stateDownloadAppSave("url", "nudes.zip").then((res) => {
       const fileSaveSuccess = res as FileSaveSuccess;
       console.log(fileSaveSuccess);
       console.log(fileSaveSuccess.message);

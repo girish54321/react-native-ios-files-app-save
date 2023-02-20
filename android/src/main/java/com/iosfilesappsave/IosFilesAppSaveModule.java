@@ -2,7 +2,6 @@ package com.iosfilesappsave;
 
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -31,6 +30,9 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
   Context mContext;
   private long downloadId;
   private DownloadManager downloadManager;
+  Promise mcallback;
+  String fileName = "myFile.pdf";
+  URL url;
 
   public IosFilesAppSaveModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -49,73 +51,88 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
   }
 
   private void downloadFile(String fileUrl, String customFileName, Promise callback) {
-    WritableMap map = Arguments.createMap();
-    String fileName = "myFile.pdf";
-
     //* Check if customFileName is not null
+    mcallback = callback;
     if(customFileName != null) {
       fileName = customFileName;
     } else {
       fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
     }
+    DownloadTask task = new DownloadTask();
+    task.execute(fileUrl);
+  }
 
-    // Create a new HttpURLConnection object
-    HttpURLConnection urlConnection = null;
-    try {
-      URL url = new URL(fileUrl);
-      urlConnection = (HttpURLConnection) url.openConnection();
-      urlConnection.setRequestMethod("HEAD");
-
-      // Check if the response code is 200 (OK)
-      if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-        // Create a new download request
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl))
-          .setTitle(fileName)
-          .setDescription("Downloading " + fileName)
-          .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-          .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOCUMENTS, fileName)
-          .setAllowedOverRoaming(false);
-        downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadId = downloadManager.enqueue(request);
-        map.putBoolean("success",true);
-        map.putString("message","Download Done");
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),fileName);
-        if (file.exists()) {
-          map.putString("path",file.getAbsolutePath());
-        }
-        callback.resolve(map);
-      } else {
-        // The file doesn't exist or is unavailable
-        map.putBoolean("success",false);
-        map.putString("message","File not found: The specified file URL doesn't exist or is unavailable");
-        map.putString("path",null);
-        callback.resolve(map);
+  private void startDownloadTask (){
+    WritableMap map = Arguments.createMap();
+    DownloadManager.Request request = new DownloadManager.Request((Uri.parse(String.valueOf(url))))
+      .setTitle(fileName)
+      .setDescription("Downloading " + fileName)
+      .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+      .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOCUMENTS, fileName)
+      .setAllowedOverRoaming(false);
+      downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
+      downloadId = downloadManager.enqueue(request);
+      map.putBoolean("success",true);
+      map.putString("message","Download Done");
+      File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),fileName);
+      if (file.exists()) {
+        map.putString("path",file.getAbsolutePath());
       }
-    } catch (IOException e) {
-      e.printStackTrace();
-      // Handle the exception and reject the promise
-      map.putBoolean("success",false);
-      map.putString("message",e.toString());
-      map.putString("path",null);
-      callback.resolve(map);
-    } finally {
-      if (urlConnection != null) {
-        urlConnection.disconnect();
-      }
-    }
+      mcallback.resolve(map);
   }
 
 
-  public class MyTask extends AsyncTask<String, Void, Integer> {
+  public class DownloadTask extends AsyncTask<String, Void, Boolean> {
     @Override
-    protected Integer doInBackground(String... params) {
-      Log.d("MyTask2222", "Result: " + params);
-      return 42;
+    protected Boolean doInBackground(String... params) {
+      String fileUrl = params[0];
+      Log.e("fileUrl",fileUrl);
+      Boolean isFileExist = false;
+      HttpURLConnection urlConnection = null;
+      WritableMap map = Arguments.createMap();
+      try {
+        url = new URL(fileUrl);
+        urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("HEAD");
+
+        // Check if the response code is 200 (OK)
+        if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+          // Create a new download request
+          return true;
+        } else {
+          // The file doesn't exist or is unavailable
+          map.putBoolean("success",false);
+          map.putString("message","File not found: The specified file URL doesn't exist or is unavailable");
+          map.putString("path",null);
+//          mcallback.resolve(map);
+          return false;
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+        // Handle the exception and reject the promise
+        map.putBoolean("success",false);
+        map.putString("message",e.toString());
+        map.putString("path",null);
+//        mcallback.resolve(map);
+        return false;
+      } finally {
+        if (urlConnection != null) {
+          urlConnection.disconnect();
+        }
+      }
     }
 
     @Override
-    protected void onPostExecute(Integer result) {
-      Log.d("MyTask", "Result: " + result);
+    protected void onPostExecute(Boolean result) {
+      if(result){
+        startDownloadTask();
+      } else {
+        WritableMap map = Arguments.createMap();
+        map.putBoolean("success",false);
+        map.putString("message","File not found: The specified file URL doesn't exist or is unavailable");
+        map.putString("path",null);
+        mcallback.resolve(map);
+      }
     }
   }
 

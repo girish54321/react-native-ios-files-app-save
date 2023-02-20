@@ -56,7 +56,7 @@ export const stateDownloadAppSave = (url: string, fileName: string | null = null
         resolve(res)
       }).catch((error: any) => {
         const object = error?.userInfo;
-        reject(Platform.OS == "ios" ? object : error)
+        reject(Platform.OS == "ios" ? object : error.error)
       });
     } catch (e) {
     }
