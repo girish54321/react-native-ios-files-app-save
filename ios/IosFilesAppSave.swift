@@ -2,9 +2,41 @@
 class IosFilesAppSave: NSObject {
 
 @objc
-func startDownload(_ urlString: String, customFileName: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func startDownload(_ urlString: String, customFileName: String?, isBase64: Bool,resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
     var parameters: [String: Any] = ["message" : ""]
     var fileName: String? = nil
+    
+        if (isBase64 != nil && isBase64 == true) {
+            if (customFileName != nil) {
+                fileName = customFileName
+            }
+            guard var documentsURL = (FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)).last,
+            let convertedData = Data(base64Encoded: urlString)
+            else {
+                parameters["success"] = false
+                parameters["message"] = "Error with base64"
+                let errorObj = NSError(domain: "", code: 0, userInfo: parameters)
+                reject("error_code", "Error message", errorObj)
+            return
+            }
+            
+            let resDocPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
+            let filePath = resDocPath.appendingPathComponent(fileName ?? "")
+
+            do {
+                try convertedData.write(to: filePath)
+                parameters["success"] = true
+                parameters["message"] = "File Saved"
+                resolve(parameters)
+            } catch {
+                parameters["success"] = false
+                parameters["message"] = "Error creating file: \(error)"
+                let errorObj = NSError(domain: "", code: 0, userInfo: parameters)
+                reject("error_code", "Error message", errorObj)
+            }
+            return
+        }
+        
     guard let url = URL(string: urlString) else {
         parameters["success"] = false
         parameters["message"] = "Invalid URL"

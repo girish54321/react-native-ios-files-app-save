@@ -2,10 +2,13 @@ package com.iosfilesappsave;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -16,6 +19,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.facebook.react.bridge.WritableMap;
@@ -46,20 +50,55 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startDownload(String promise, String customFileName, Promise callback) {
-    downloadFile(promise, customFileName, callback);
+  public void startDownload(String promise, String customFileName, Boolean isBase64, Promise callback) {
+    downloadFile(promise, customFileName,isBase64, callback);
   }
 
-  private void downloadFile(String fileUrl, String customFileName, Promise callback) {
+  private void downloadFile(String fileUrl, String customFileName,Boolean isBase64, Promise callback) {
     //* Check if customFileName is not null
     mcallback = callback;
-    if(customFileName != null) {
-      fileName = customFileName;
+    if (isBase64) {
+      if(customFileName != null) {
+        fileName = customFileName;
+      }
+      saveBase64ToFile(mContext,fileUrl,fileName);
     } else {
-      fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+      if(customFileName != null) {
+        fileName = customFileName;
+      } else {
+        fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+      }
+      DownloadTask task = new DownloadTask();
+      task.execute(fileUrl);
     }
-    DownloadTask task = new DownloadTask();
-    task.execute(fileUrl);
+  }
+
+  public boolean saveBase64ToFile(Context context, String base64String, String fileName) {
+    byte[] fileBytes = Base64.decode(base64String, Base64.DEFAULT);
+    File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+    if (!downloadFolder.exists()) {
+      downloadFolder.mkdirs();
+    }
+    File file = new File(downloadFolder, fileName);
+    try {
+      FileOutputStream outputStream = new FileOutputStream(file);
+      outputStream.write(fileBytes);
+      outputStream.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    Uri uri = Uri.fromFile(file);
+    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
+    context.sendBroadcast(mediaScanIntent);
+    WritableMap map = Arguments.createMap();
+    map.putBoolean("success",false);
+    map.putString("message","Download Done");
+    if (file.exists()) {
+      map.putString("path",file.getAbsolutePath());
+    }
+    mcallback.resolve(map);
+    return true;
   }
 
   private void startDownloadTask (){
@@ -73,11 +112,11 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
       downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
       downloadId = downloadManager.enqueue(request);
       map.putBoolean("success",true);
-      map.putString("message","Download Done");
+      map.putString("message","Download Done22");
       File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),fileName);
-      if (file.exists()) {
+//      if (file.exists()) {
         map.putString("path",file.getAbsolutePath());
-      }
+//      }
       mcallback.resolve(map);
   }
 
