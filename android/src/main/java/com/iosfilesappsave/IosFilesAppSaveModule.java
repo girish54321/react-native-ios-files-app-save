@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
@@ -50,12 +51,14 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startDownload(String promise, String customFileName, Boolean isBase64, Promise callback) {
-    downloadFile(promise, customFileName,isBase64, callback);
+  public void startDownload(ReadableMap fileSaveOptions, Promise callback) {
+    downloadFile(fileSaveOptions, callback);
   }
 
-  private void downloadFile(String fileUrl, String customFileName,Boolean isBase64, Promise callback) {
-    //* Check if customFileName is not null
+  private void downloadFile(ReadableMap fileSaveOptions, Promise callback) {
+    String fileUrl =fileSaveOptions.hasKey("url") ? fileSaveOptions.getString("url") : null;
+    String customFileName = fileSaveOptions.hasKey("fileName") ?  fileSaveOptions.getString("fileName") : null;
+    Boolean isBase64 = fileSaveOptions.hasKey("isBase64") && fileSaveOptions.getBoolean("isBase64");
     mcallback = callback;
     if (isBase64) {
       if(customFileName != null) {
@@ -112,7 +115,7 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
       downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
       downloadId = downloadManager.enqueue(request);
       map.putBoolean("success",true);
-      map.putString("message","Download Done22");
+      map.putString("message","Download Done");
       File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),fileName);
 //      if (file.exists()) {
         map.putString("path",file.getAbsolutePath());

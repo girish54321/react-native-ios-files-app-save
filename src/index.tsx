@@ -50,10 +50,33 @@ export const startDownload = async (url: string) => {
 //TODO: Add Path Support
 //*  path: DestinationPathEnum = DestinationPathEnum.DIRECTORY_DOWNLOADS
 
-export const stateDownloadAppSave = (url: string, fileName: string | null = null, isBase61: boolean | null = false) => {
+/**
+ * Options for saving a file.
+ */
+
+export interface FileSaveOptions {
+  /**
+   * The URL of the file to save.
+   */
+  url: string;
+
+  /**
+   * The filename to use for the saved file.
+   */
+  fileName?: string;
+
+  /**
+   * Indicates whether the file data is encoded in Base64 format.
+   */
+  isBase64?: boolean;
+}
+
+
+
+export const stateDownloadAppSave = (options: FileSaveOptions) => {
   return new Promise((resolve, reject) => {
     try {
-      NativeModules.IosFilesAppSave.startDownload(url, fileName, isBase61).then((res: FileSaveSuccess) => {
+      NativeModules.IosFilesAppSave.startDownload(options).then((res: FileSaveSuccess) => {
         resolve(res)
       }).catch((error: any) => {
         const object = error?.userInfo;

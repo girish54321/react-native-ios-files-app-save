@@ -51,13 +51,18 @@ export default function App() {
       //* Handle Permission
       return;
     }
-    stateDownloadAppSave('https://YOUR_FDF.COM/FILE/BILL/OCT.pdf')
-      .then((res: any) => {
-        console.log(res);
-      })
-      .catch((e) => {
-        console.log('error', e);
-      });
+   let options: FileSaveOptions = {
+      url: "YOUR URL,
+      fileName: "name.pdf,
+      isBase64: false
+    }
+    stateDownloadAppSave(options).then((res) => {
+      const fileSaveSuccess = res as FileSaveSuccess;
+      console.log(fileSaveSuccess);
+      console.log(fileSaveSuccess.message);
+    }).catch((error) => {
+      console.log("error", error);
+    })
   };
 
   return (
