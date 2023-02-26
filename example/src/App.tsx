@@ -1,30 +1,88 @@
 import * as React from 'react';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { FileSaveOptions, FileSaveSuccess, stateDownloadAppSave } from 'react-native-ios-files-app-save';
+import { BASE_64_PDF } from './data/data';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { stateDownloadAppSave } from 'react-native-ios-files-app-save';
-
+const fileArray = [
+  {
+    title: "PDF",
+    image: require('./images/pdf.png'),
+    url: "https://sample-videos.com/pdf/Sample-pdf-5mb.pdf"
+  },
+  {
+    title: "BASE 64",
+    image: require('./images/pdf.png'),
+    url: BASE_64_PDF,
+    isBase64: true
+  },
+  {
+    title: "PNG",
+    image: require('./images/png.png'),
+    url: "https://sample-videos.com/img/Sample-png-image-1mb.png"
+  },
+  {
+    title: "ZIP",
+    image: require('./images/zip.png'),
+    url: "https://sample-videos.com/zip/10mb.zip"
+  },
+  {
+    title: "JPG",
+    image: require('./images/jpg.png'),
+    url: "https://sample-videos.com/img/Sample-jpg-image-1mb.jpg"
+  },
+  {
+    title: "DOC",
+    image: require('./images/doc.png'),
+    url: "https://sample-videos.com/doc/Sample-doc-file-1000kb.doc"
+  }
+]
 export default function App() {
 
-  const demoDownload = () => {
-    stateDownloadAppSave("https://unec.edu.az/application/uploads/2014/12/pdf-sample.pdf").then((res: any) => {
-      console.log(res);
-    }).catch((e) => {
-      console.log("error", e);
+
+  const renderItem = ({ item }) => {
+    return (
+      <View style={{ flex: 0.5, padding: 22, }} >
+        <TouchableOpacity onPress={() => {
+          demoDownload(item);
+        }} >
+          <Image source={item.image} style={{ height: 160, width: 160, padding: 22 }} />
+        </TouchableOpacity>
+        <Text style={{ alignSelf: 'center', marginTop: 16, fontSize: 22 }}>{item.title}</Text>
+      </View>
+    );
+  };
+
+  const demoDownload = (item: any) => {
+    let options: FileSaveOptions = {
+      url: item.url
+    }
+    stateDownloadAppSave(options).then((res) => {
+      const fileSaveSuccess = res as FileSaveSuccess;
+      console.log(fileSaveSuccess);
+      console.log(fileSaveSuccess.message);
+    }).catch((error) => {
+      console.log("error", error);
     })
   }
 
+
+
   return (
-    <View style={styles.container}>
-      <Text onPress={demoDownload}>{"Start Download"}</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <FlatList
+          data={fileArray}
+          renderItem={renderItem}
+          numColumns={2}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   box: {
     width: 60,

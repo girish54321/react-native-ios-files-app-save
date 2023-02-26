@@ -1,29 +1,101 @@
 @objc(IosFilesAppSave)
 class IosFilesAppSave: NSObject {
+    
+    @objc
+    func startDownload(_ options: NSDictionary, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        var parameters: [String: Any] = ["message" : ""]
+        var urlString: String? = ""
+        urlString = options["url"] as? String
+        let customFileName: String? = options["fileName"] as? String
+        let isBase64: Bool? = options["isBase64"] as? Bool
 
-  @objc
-  func startDownload(_ string: String,  resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    let fileURL : String = string;
-   
-    guard let url = URL(string: fileURL) else {
-      reject("Error","Invalid URL",nil)
-      return
+        if ((isBase64 != nil) == true) {
+            if (customFileName == nil) {
+                parameters["success"] = false
+                parameters["message"] = "File name is reqiored for BASE64"
+                resolve(parameters)
+                return
+            }
+            guard var documentsURL = (FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)).last,
+                  let convertedData = Data(base64Encoded: urlString ?? "")
+            else {
+                parameters["success"] = false
+                parameters["message"] = "Error with base64"
+                resolve(parameters)
+                return
+            }
+            
+            let resDocPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
+            let filePath = resDocPath.appendingPathComponent(customFileName ?? "")
+            
+            do {
+                try convertedData.write(to: filePath)
+                parameters["success"] = true
+                parameters["message"] = "File Saved"
+                resolve(parameters)
+            } catch {
+                parameters["success"] = false
+                parameters["message"] = "Error creating file: \(error)"
+                resolve(parameters)
+            }
+            return
+        }
+        
+        guard let url = URL(string: urlString ?? "") else {
+            parameters["success"] = false
+            parameters["message"] = "Invalid URL"
+            resolve(parameters)
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                parameters["success"] = false
+                parameters["message"] = "Error downloading file: \(error)"
+                resolve(parameters)
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                parameters["success"] = false
+                parameters["message"] = "Invalid status code"
+                resolve(parameters)
+                return
+            }
+            
+            guard let data = data else {
+                parameters["success"] = false
+                parameters["message"] = "No data downloaded"
+                resolve(parameters)
+                return
+            }
+            var fileName = ""
+            if (customFileName != nil) {
+                fileName = customFileName!
+            } else {
+                fileName = url.lastPathComponent
+            }
+            let resDocPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
+            let filePath = resDocPath.appendingPathComponent(fileName)
+            
+            do {
+                try data.write(to: filePath)
+                parameters["success"] = true
+                parameters["message"] = "File Saved"
+                resolve(parameters)
+            } catch {
+                parameters["success"] = false
+                parameters["message"] = "Error creating file: \(error)"
+                resolve(parameters)
+            }
+        }
+        
+        task.resume()
     }
-      let fileName = url.lastPathComponent
-      let pdfData = try? Data.init(contentsOf: url)
-      let resDocPath = (FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!) as URL
-      let pdfFileName = fileName
-      let filePath = resDocPath.appendingPathComponent(pdfFileName ?? "file")
-      do {
-        try pdfData?.write(to: filePath,options: .atomic)
-        resolve("File Saved")
-      } catch {
-        reject("Error","Invalid URL",nil)
-      }
-  }
-
-  @objc(multiply:withB:withResolver:withRejecter:)
-  func multiply(a: Float, b: Float, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-    resolve(a*b)
-  }
+    
+    
+    @objc(multiply:withB:withResolver:withRejecter:)
+    func multiply(a: Float, b: Float, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        resolve(a*b)
+    }
 }

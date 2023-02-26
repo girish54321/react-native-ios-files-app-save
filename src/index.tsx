@@ -17,6 +17,21 @@ const IosFilesAppSave = NativeModules.IosFilesAppSave
     }
   );
 
+export const enum DestinationPathEnum {
+  DIRECTORY_DOCUMENTS = "Documents",
+  DIRECTORY_DOWNLOADS = "Download",
+  DIRECTORY_MOVIES = "Movies",
+  DIRECTORY_MUSIC = "Music",
+  DIRECTORY_NOTIFICATIONS = "Notifications",
+  DIRECTORY_PICTURES = "Pictures",
+  DIRECTORY_PODCASTS = "Podcasts"
+}
+
+export interface FileSaveSuccess {
+  message: string;
+  path: string;
+  success: boolean;
+}
 
 
 export function multiply(a: number, b: number): Promise<number> {
@@ -32,14 +47,42 @@ export const startDownload = async (url: string) => {
   }
 }
 
-export const stateDownloadAppSave = (url: string) => {
+//TODO: Add Path Support
+//*  path: DestinationPathEnum = DestinationPathEnum.DIRECTORY_DOWNLOADS
+
+/**
+ * Options for saving a file.
+ */
+
+export interface FileSaveOptions {
+  /**
+   * The URL of the file to save.
+   */
+  url: string;
+
+  /**
+   * The filename to use for the saved file.
+   */
+  fileName?: string;
+
+  /**
+   * Indicates whether the file data is encoded in Base64 format.
+   */
+  isBase64?: boolean;
+}
+
+
+
+export const stateDownloadAppSave = (options: FileSaveOptions) => {
   return new Promise((resolve, reject) => {
     try {
-      NativeModules.IosFilesAppSave.startDownload(url).then((res: any) => {
+      NativeModules.IosFilesAppSave.startDownload(options).then((res: FileSaveSuccess) => {
         resolve(res)
+      }).catch((error: any) => {
+        const object = error?.userInfo;
+        reject(Platform.OS == "ios" ? object : error.error)
       });
     } catch (e) {
-      reject(e)
     }
   });
 }
