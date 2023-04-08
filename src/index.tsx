@@ -72,8 +72,7 @@ export interface FileSaveOptions {
 }
 
 
-
-export const stateDownloadAppSave = (options: FileSaveOptions) => {
+export const startDownloadAppSave = (options: FileSaveOptions) => {
   return new Promise((resolve, reject) => {
     try {
       NativeModules.IosFilesAppSave.startDownload(options).then((res: FileSaveSuccess) => {
