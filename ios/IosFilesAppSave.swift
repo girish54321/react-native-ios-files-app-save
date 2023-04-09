@@ -9,27 +9,20 @@ class IosFilesAppSave: NSObject {
         let customFileName: String? = options["fileName"] as? String
         let isBase64: Bool? = options["isBase64"] as? Bool
         
+        //MARK: FOR BASE64
         if ((isBase64 != nil) == true) {
             if (customFileName == nil) {
                 parameters["success"] = false
-                parameters["message"] = "File name is reqiored for BASE64"
+                parameters["message"] = "File name is required for BASE64"
                 resolve(parameters)
                 return
             }
-            guard var documentsURL = (FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)).last,
-                  let convertedData = Data(base64Encoded: urlString ?? "")
-            else {
-                parameters["success"] = false
-                parameters["message"] = "Error with base64"
-                resolve(parameters)
-                return
-            }
-            
+            let convertedData = Data(base64Encoded: urlString ?? "")
             let resDocPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
             let filePath = resDocPath.appendingPathComponent(customFileName ?? "")
             
             do {
-                try convertedData.write(to: filePath)
+                try convertedData?.write(to: filePath)
                 parameters["success"] = true
                 parameters["message"] = "File Saved"
                 parameters["path"] = getFilePath(url: resDocPath)
@@ -42,6 +35,7 @@ class IosFilesAppSave: NSObject {
             return
         }
         
+        //MARK: FOR REMOTE URL
         guard let url = URL(string: urlString ?? "") else {
             parameters["success"] = false
             parameters["message"] = "Invalid URL"

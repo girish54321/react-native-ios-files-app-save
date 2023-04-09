@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { FileSaveOptions, FileSaveSuccess, stateDownloadAppSave } from 'react-native-ios-files-app-save';
+import { FileSaveOptions, FileSaveSuccess, startDownloadAppSave } from 'react-native-ios-files-app-save';
 import { BASE_64_PDF } from './data/data';
 
 const fileArray = [
@@ -56,7 +56,15 @@ export default function App() {
     let options: FileSaveOptions = {
       url: item.url
     }
-    stateDownloadAppSave(options).then((res) => {
+    if (item.isBase64) {
+      options = {
+        ...options,
+        isBase64: true,
+        fileName: "my_file.pdf" // NOTE File name is required in case of Base64
+      }
+    }
+
+    startDownloadAppSave(options).then((res) => {
       const fileSaveSuccess = res as FileSaveSuccess;
       console.log(fileSaveSuccess);
       console.log(fileSaveSuccess.message);

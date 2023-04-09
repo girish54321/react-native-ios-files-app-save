@@ -40,10 +40,10 @@ yarn add react-native-ios-files-app-save
 
 ## Usage
 
-To use react-native-ios-files-app-save simply import the `stateDownloadAppSave` function and call it with the URL of the file you want to download:
+To use react-native-ios-files-app-save simply import the `startDownloadAppSave` function and call it with the URL of the file you want to download:
 
 ```js
-import { stateDownloadAppSave } from 'react-native-ios-files-app-save';
+import { startDownloadAppSave } from 'react-native-ios-files-app-save';
 
 export default function App() {
   const demoDownload = () => {
@@ -56,7 +56,7 @@ export default function App() {
       fileName: "name.pdf,
       isBase64: false
     }
-    stateDownloadAppSave(options).then((res) => {
+    startDownloadAppSave(options).then((res) => {
       const fileSaveSuccess = res as FileSaveSuccess;
       console.log(fileSaveSuccess);
       console.log(fileSaveSuccess.message);
