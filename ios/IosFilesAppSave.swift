@@ -8,7 +8,7 @@ class IosFilesAppSave: NSObject {
         urlString = options["url"] as? String
         let customFileName: String? = options["fileName"] as? String
         let isBase64: Bool? = options["isBase64"] as? Bool
-
+        
         if ((isBase64 != nil) == true) {
             if (customFileName == nil) {
                 parameters["success"] = false
@@ -32,6 +32,7 @@ class IosFilesAppSave: NSObject {
                 try convertedData.write(to: filePath)
                 parameters["success"] = true
                 parameters["message"] = "File Saved"
+                parameters["path"] = getFilePath(url: resDocPath)
                 resolve(parameters)
             } catch {
                 parameters["success"] = false
@@ -48,7 +49,7 @@ class IosFilesAppSave: NSObject {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        let task = URLSession.shared.dataTask(with: url) { [self] (data, response, error) in
             if let error = error {
                 parameters["success"] = false
                 parameters["message"] = "Error downloading file: \(error)"
@@ -82,6 +83,7 @@ class IosFilesAppSave: NSObject {
                 try data.write(to: filePath)
                 parameters["success"] = true
                 parameters["message"] = "File Saved"
+                parameters["path"] = getFilePath(url: resDocPath)
                 resolve(parameters)
             } catch {
                 parameters["success"] = false
@@ -93,6 +95,16 @@ class IosFilesAppSave: NSObject {
         task.resume()
     }
     
+    func getFilePath(url:URL) -> String? {
+        var filePath: String? = nil
+        do {
+            let directoryContents = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            filePath = String(describing: directoryContents[0])
+        } catch {
+            print(error)
+        }
+        return filePath
+    }
     
     @objc(multiply:withB:withResolver:withRejecter:)
     func multiply(a: Float, b: Float, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
