@@ -86,3 +86,11 @@ MIT
 ---
 
 Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+
+If you find my work useful, please consider supporting me by buying me a coffee!
+
+Your support helps me continue to develop and maintain this package.
+
+Thank you!
+
+<a href="https://www.buymeacoffee.com/girishparaa" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>

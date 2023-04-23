@@ -1,6 +1,6 @@
 {
   "name": "react-native-ios-files-app-save",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "react-native-ios-files-app-save is a React Native package that allows you to easily download any file from the internet and save it to your Files app on Android and iOS devices.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
