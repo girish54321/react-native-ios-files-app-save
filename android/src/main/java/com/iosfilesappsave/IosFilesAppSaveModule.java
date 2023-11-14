@@ -1,5 +1,7 @@
 package com.iosfilesappsave;
 
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
+
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -78,7 +80,8 @@ public class IosFilesAppSaveModule extends ReactContextBaseJavaModule {
 
   public boolean saveBase64ToFile(Context context, String base64String, String fileName) {
     byte[] fileBytes = Base64.decode(base64String, Base64.DEFAULT);
-    File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+//    File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+    File downloadFolder = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS);
     if (!downloadFolder.exists()) {
       downloadFolder.mkdirs();
     }
